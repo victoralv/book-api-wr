@@ -1,4 +1,4 @@
-# How to create an easy API with node , postgress , cache control and swagger documentation
+# How to create an easy API with node , postgres , cache control and swagger documentation
 
 ## How to use this project?
 
