@@ -6,7 +6,7 @@ var options = {
 };
 
 var pgp = require('pg-promise')(options);
-var connectionString = 'postgres://readonly:dGUA1thwtznKWeqohU1lwl@wrtest.cgxehdr5uwty.eu-west-1.rds.amazonaws.com/wrtest';
+var connectionString = 'postgres://USER:PASSORD@DOMAIN/DATABASENAME';
 var db = pgp(connectionString);
 
 
