@@ -17,7 +17,7 @@ var swaggerDefinition = {
     version: '1.0.0',
     description: 'Book API swagger documentation',
   },
-  host: 'book-api-wr.herokuapp.com/',
+  host: 'book-api-wr.herokuapp.com',
   basePath: '/',
 };
 
