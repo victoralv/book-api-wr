@@ -1,4 +1,4 @@
-var promise = require('bluebird');
+  var promise = require('bluebird');
 
 var options = {
   // Initialization Options
@@ -6,17 +6,18 @@ var options = {
 };
 
 var pgp = require('pg-promise')(options);
-var connectionString = 'postgres://localhost:5432/puppies';
+var connectionString = 'postgres://readonly:dGUA1thwtznKWeqohU1lwl@wrtest.cgxehdr5uwty.eu-west-1.rds.amazonaws.com/wrtest';
 var db = pgp(connectionString);
 
-function getAllPuppies(req, res, next) {
-  db.any('select * from pups')
+
+function getAllCategories(req, res, next) {
+  db.any('select * from category')
     .then(function (data) {
       res.status(200)
         .json({
           status: 'success',
           data: data,
-          message: 'Retrieved ALL puppies'
+          message: 'Retrieved ALL categories'
         });
     })
     .catch(function (err) {
@@ -24,15 +25,15 @@ function getAllPuppies(req, res, next) {
     });
 }
 
-function getSinglePuppy(req, res, next) {
-  var pupID = parseInt(req.params.id);
-  db.one('select * from pups where id = $1', pupID)
+function getSingleBook(req, res, next) {
+  var bookID = parseInt(req.params.id);
+  db.one('select * from book where id = $1', bookID)
     .then(function (data) {
       res.status(200)
         .json({
           status: 'success',
           data: data,
-          message: 'Retrieved ONE puppy'
+          message: 'Retrieved ONE book'
         });
     })
     .catch(function (err) {
@@ -40,16 +41,15 @@ function getSinglePuppy(req, res, next) {
     });
 }
 
-function createPuppy(req, res, next) {
-  req.body.age = parseInt(req.body.age);
-  db.none('insert into pups(name, breed, age, sex)' +
-      'values(${name}, ${breed}, ${age}, ${sex})',
-    req.body)
-    .then(function () {
+function getSingleCategory(req, res, next) {
+  var categoryID = parseInt(req.params.id);
+  db.one('select * from category where id = $1', categoryID)
+    .then(function (data) {
       res.status(200)
         .json({
           status: 'success',
-          message: 'Inserted one puppy'
+          data: data,
+          message: 'Retrieved ONE category'
         });
     })
     .catch(function (err) {
@@ -57,33 +57,17 @@ function createPuppy(req, res, next) {
     });
 }
 
-function updatePuppy(req, res, next) {
-  db.none('update pups set name=$1, breed=$2, age=$3, sex=$4 where id=$5',
-    [req.body.name, req.body.breed, parseInt(req.body.age),
-      req.body.sex, parseInt(req.params.id)])
-    .then(function () {
-      res.status(200)
-        .json({
-          status: 'success',
-          message: 'Updated puppy'
-        });
-    })
-    .catch(function (err) {
-      return next(err);
-    });
-}
 
-function removePuppy(req, res, next) {
-  var pupID = parseInt(req.params.id);
-  db.result('delete from pups where id = $1', pupID)
-    .then(function (result) {
-      /* jshint ignore:start */
+function getBooksByCategory(req, res, next) {
+  var categoryID = parseInt(req.params.id);
+  db.any('select book.* from category_book INNER JOIN book ON (book.id = category_book.books_id)  where category_book.categories_id = $1', categoryID)
+    .then(function (data) {
       res.status(200)
         .json({
           status: 'success',
-          message: `Removed ${result.rowCount} puppy`
+          data: data,
+          message: 'Retrieved ONE category'
         });
-      /* jshint ignore:end */
     })
     .catch(function (err) {
       return next(err);
@@ -92,9 +76,8 @@ function removePuppy(req, res, next) {
 
 
 module.exports = {
-  getAllPuppies: getAllPuppies,
-  getSinglePuppy: getSinglePuppy,
-  createPuppy: createPuppy,
-  updatePuppy: updatePuppy,
-  removePuppy: removePuppy
+  getSingleBook: getSingleBook,
+  getAllCategories: getAllCategories,
+  getSingleCategory: getSingleCategory,
+  getBooksByCategory: getBooksByCategory
 };

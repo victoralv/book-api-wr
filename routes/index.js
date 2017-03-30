@@ -3,130 +3,140 @@ var router = express.Router();
 
 var db = require('../queries');
 
+var apicache  = require('apicache');
+var cache     = apicache.middleware;
+
+//only cache 200 http code
+const onlyStatus200 = req => req.statusCode === 200;
+
 /**
  * @swagger
  * definition:
- *   Puppy:
+ *   Book:
  *     properties:
+ *       id:
+ *         type: integer
+ *       uuid:
+ *         type: string
+ *       title:
+ *         type: string
+ *       author:
+ *         type: string
+ *       language:
+ *         type: string
+ *       createtime:
+ *         type: string
+ *   Category:
+ *     properties:
+ *       id:
+ *         type: integer
+ *       iconcolor:
+ *         type: string
+ *       iconurl:
+ *         type: string
  *       name:
  *         type: string
- *       breed:
+ *       description:
  *         type: string
- *       age:
+ *       parent_id:
  *         type: integer
- *       sex:
- *         type: string
+ *       listorder:
+ *         type: integer
  */
+
+
 
 /**
  * @swagger
- * /api/puppies:
+ * /api/v1/books/{id}:
  *   get:
  *     tags:
- *       - Puppies
- *     description: Returns all puppies
+ *       - Books
+ *     description: Returns a single Book
  *     produces:
  *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: Book id
+ *         in: path
+ *         required: true
+ *         type: integer
  *     responses:
  *       200:
- *         description: An array of puppies
+ *         description: Returns a single Book by Id
  *         schema:
- *           $ref: '#/definitions/Puppy'
+ *           $ref: '#/definitions/Book'
  */
-router.get('/api/puppies', db.getAllPuppies);
+
+router.get('/api/v1/books/:id', cache('1 hour', onlyStatus200), db.getSingleBook);
 
 /**
  * @swagger
- * /api/puppies/{id}:
+ * /api/v1/categories:
  *   get:
  *     tags:
- *       - Puppies
- *     description: Returns a single puppy
+ *       - Categories
+ *     description: Returns all categories
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: An array of categories
+ *         schema:
+ *           $ref: '#/definitions/Category'
+ */
+
+
+router.get('/api/v1/categories', cache('10 minutes', onlyStatus200), db.getAllCategories);
+
+/**
+ * @swagger
+ * /api/v1/categories/{id}:
+ *   get:
+ *     tags:
+ *       - Categories
+ *     description: Returns a single Category
  *     produces:
  *       - application/json
  *     parameters:
  *       - name: id
- *         description: Puppy's id
+ *         description: Category id
  *         in: path
  *         required: true
  *         type: integer
  *     responses:
  *       200:
- *         description: A single puppy
+ *         description: Returns a single Category by ID
  *         schema:
- *           $ref: '#/definitions/Puppy'
+ *           $ref: '#/definitions/Category'
  */
-router.get('/api/puppies/:id', db.getSinglePuppy);
+
+ router.get('/api/v1/categories/:id', cache('1 hour', onlyStatus200), db.getSingleCategory);
 
 /**
  * @swagger
- * /api/puppies:
- *   post:
+ * /api/v1/books/category/{id}:
+ *   get:
  *     tags:
- *       - Puppies
- *     description: Creates a new puppy
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: puppy
- *         description: Puppy object
- *         in: body
- *         required: true
- *         schema:
- *           $ref: '#/definitions/Puppy'
- *     responses:
- *       200:
- *         description: Successfully created
- */
-router.post('/api/puppies', db.createPuppy);
-
-/**
- * @swagger
- * /api/puppies/{id}:
- *   put:
- *     tags:
- *       - Puppies
- *     description: Updates a single puppy
+ *       - Books
+ *     description: Retrieve all books in a category
  *     produces:
  *       - application/json
  *     parameters:
  *       - name: id
- *         description: Puppy's id
- *         in: path
- *         required: true
- *         type: integer
- *       - name: puppy
- *         description: Puppy object
- *         in: body
- *         required: true
- *         schema:
- *           $ref: '#/definitions/Puppy'
- *     responses:
- *       200:
- *         description: Successfully updated
- */
-router.put('/api/puppies/:id', db.updatePuppy);
-
-/**
- * @swagger
- * /api/puppies/{id}:
- *   delete:
- *     tags:
- *       - Puppies
- *     description: Deletes a single puppy
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: id
- *         description: Puppy's id
+ *         description: Category id
  *         in: path
  *         required: true
  *         type: integer
  *     responses:
  *       200:
- *         description: Successfully deleted
+ *         description: Returns an array of books of the Category 
+ *         schema:
+ *           $ref: '#/definitions/Books'
  */
-router.delete('/api/puppies/:id', db.removePuppy);
+router.get('/api/v1/books/category/:id', cache('10 minutes', onlyStatus200),db.getBooksByCategory);
+
+
 
 
 module.exports = router;

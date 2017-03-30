@@ -13,9 +13,9 @@ var app = express();
 // swagger definition
 var swaggerDefinition = {
   info: {
-    title: 'Node Swagger API',
+    title: 'Books API',
     version: '1.0.0',
-    description: 'Demonstrating how to desribe a RESTful API with Swagger',
+    description: 'Book API swagger documentation',
   },
   host: 'localhost:3000',
   basePath: '/',
@@ -46,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-app.get('/swagger.json', function(req, res) {
+app.get('/api/v1/swagger.json', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
